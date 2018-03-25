@@ -26,16 +26,13 @@ public:
 list<RowEntry> readLine(string line);
 vector< list<RowEntry> > transposeMatrix(vector< list<RowEntry> > matrix);
 void print(vector< list<RowEntry> > matrix);
-int maxDimension = 0;
+int transposedRowCount = 0;
 
 int main(int argc, char *argv[]) {
     vector< list<RowEntry> > matrix;
     string line;
     while (getline(cin, line)) {
         matrix.push_back(readLine(line));
-    }
-    if (matrix.size() > maxDimension) {
-        maxDimension = matrix.size();
     }
     vector< list<RowEntry> > transposed = transposeMatrix(matrix);
     print(transposed);
@@ -44,18 +41,21 @@ int main(int argc, char *argv[]) {
 list<RowEntry> readLine(string line) {
     list<RowEntry> row;
     std::istringstream lstream(line);
-    double column, value;
+    int column;
+    double value;
+    
     while (lstream >> column >> value) {
         row.push_back(RowEntry(column, value));
-        if (column > maxDimension) {
-            maxDimension = column;
+        if (column > transposedRowCount) {
+            //input # of columns == output # of rows
+            transposedRowCount = column;
         }
     }
     return row;
 }
 
 vector< list<RowEntry> > transposeMatrix(vector< list<RowEntry> > matrix) {
-    vector< list<RowEntry> > transposed(maxDimension - 1);
+    vector< list<RowEntry> > transposed(transposedRowCount);
     for (int r = 0; r < matrix.size(); r++) {
         for (RowEntry entry : matrix[r]) {
             int newRow = entry.column - 1;
