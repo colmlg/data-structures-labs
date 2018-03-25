@@ -37,7 +37,6 @@ int main(int argc, char *argv[]) {
     if (matrix.size() > maxDimension) {
         maxDimension = matrix.size();
     }
-//    print(matrix);
     vector< list<RowEntry> > transposed = transposeMatrix(matrix);
     print(transposed);
 }
