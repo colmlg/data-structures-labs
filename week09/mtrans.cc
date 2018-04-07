@@ -6,8 +6,6 @@
 #include <vector>
 
 using std::list;
-other
-
 using std::cin;
 using std::cout;
 using std::endl;
