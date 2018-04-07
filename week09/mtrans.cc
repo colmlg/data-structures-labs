@@ -6,6 +6,8 @@
 #include <vector>
 
 using std::list;
+other
+
 using std::cin;
 using std::cout;
 using std::endl;
@@ -31,8 +33,14 @@ int transposedRowCount = 0;
 int main(int argc, char *argv[]) {
     vector< list<RowEntry> > matrix;
     string line;
+    int rowCount = 0;
     while (getline(cin, line)) {
+        rowCount++;
         matrix.push_back(readLine(line));
+    }
+
+    if (rowCount > transposedRowCount) {
+        transposedRowCount = rowCount;
     }
     vector< list<RowEntry> > transposed = transposeMatrix(matrix);
     print(transposed);
@@ -43,11 +51,10 @@ list<RowEntry> readLine(string line) {
     std::istringstream lstream(line);
     int column;
     double value;
-    
+
     while (lstream >> column >> value) {
         row.push_back(RowEntry(column, value));
         if (column > transposedRowCount) {
-            //input # of columns == output # of rows
             transposedRowCount = column;
         }
     }

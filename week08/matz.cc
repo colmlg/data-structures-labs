@@ -44,8 +44,7 @@ list<RowEntry> formatz(string line) {
     double val;
     while (lstream>> val)  {
         if (val > epsilon) {
-            RowEntry entry = RowEntry(val, index);
-            row.push_back(entry);
+            row.push_back(RowEntry(val, index));
         }
         index++;
     }
