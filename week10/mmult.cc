@@ -17,7 +17,7 @@ public:
     int column;
     double value;
 
-    explicit RowEntry(int column, double value) {
+    RowEntry(int column, double value) {
         this->column = column;
         this->value = value;
     }
