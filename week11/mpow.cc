@@ -36,9 +36,14 @@ long multiplyRows(Row first, Row second);
 int transposedRowCount = 0;
 
 int main(int argc, char *argv[]) {
-    
-    int power = atoi(argv[1]);
-    
+
+  std::istringstream ss(argv[1]);
+ int power;
+ if (!(ss >> power) || power < 0) {
+  cout << "Illegal exponent; exiting." << endl;
+  return 1;
+ }
+     
     Matrix sparseMatrix = readMatrix();
     Matrix resultMatrix(sparseMatrix.size());
     
