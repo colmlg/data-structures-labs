@@ -31,36 +31,37 @@ Row readLine(string line);
 void print(const Matrix& matrix);
 Matrix transposeMatrix(const Matrix& matrix);
 Matrix multiplyMatrices(const Matrix& first, const Matrix& second, Matrix& result);
-long multiplyRows(Row first, Row second);
+long multiplyRows(const Row& first, const Row& second);
 
 int transposedRowCount = 0;
 
 int main(int argc, char *argv[]) {
 
-  std::istringstream ss(argv[1]);
- int power;
- if (!(ss >> power) || power < 0) {
-  cout << "Illegal exponent; exiting." << endl;
-  return 1;
- }
-     
+    std::istringstream ss(argv[1]);
+    int power;
+    if (!(ss >> power) || power < 0) {
+        cout << "Illegal exponent; exiting." << endl;
+        return 1;
+    }
+
     Matrix sparseMatrix = readMatrix();
-    Matrix resultMatrix(sparseMatrix.size());
-    
-    if(power == 1) {
+
+    if (power == 1) {
         print(sparseMatrix);
         return 0;
     }
     
-//    multiplyMatrices(sparseMatrix, sparseMatrix, resultMatrix);
+    Matrix resultMatrix;
+    multiplyMatrices(sparseMatrix, sparseMatrix, resultMatrix);
 
-    for(int j = 1; j < power; j++) {
-        multiplyMatrices(sparseMatrix, sparseMatrix, resultMatrix);
-        sparseMatrix = resultMatrix;
+    for (int j = 2; j < power; j++) {
+        Matrix newResult;
+        multiplyMatrices(sparseMatrix, resultMatrix, newResult);
+        resultMatrix = newResult;
     }
-    
+
     print(resultMatrix);
-    
+
     return 0;
 }
 
@@ -117,9 +118,16 @@ Matrix transposeMatrix(const Matrix& matrix) {
 }
 
 Matrix multiplyMatrices(const Matrix& first, const Matrix& second, Matrix& result) {
+    result.clear();
+
+    for (int i = 0; i < first.size(); i++) {
+        result.push_back(Row());
+    }
+
+
     Matrix secondT = transposeMatrix(second);
-    for(int row = 0; row < first.size(); row++) {
-        for(int column = 0; column < secondT.size(); column++) {
+    for (int row = 0; row < first.size(); row++) {
+        for (int column = 0; column < secondT.size(); column++) {
             double value = multiplyRows(first[row], secondT[column]);
             if (value == 0) {
                 continue;
@@ -129,22 +137,22 @@ Matrix multiplyMatrices(const Matrix& first, const Matrix& second, Matrix& resul
     }
 }
 
-long multiplyRows(Row first, Row second) {
+long multiplyRows(const Row& first, const Row& second) {
     long result = 0.0;
-    Row::iterator firstPos = first.begin();
-    Row::iterator secondPos = second.begin();
-        
-    while(firstPos != first.end() && secondPos != second.end()) {
-        if(firstPos->column == secondPos->column) {
+    Row::const_iterator firstPos = first.begin();
+    Row::const_iterator secondPos = second.begin();
+
+    while (firstPos != first.end() && secondPos != second.end()) {
+        if (firstPos->column == secondPos->column) {
             result += (firstPos->value * secondPos->value);
             firstPos++;
-            secondPos++;            
+            secondPos++;
         } else if (firstPos->column > secondPos->column) {
             secondPos++;
         } else { // if (firstPos->column < secondPos->column)
             firstPos++;
         }
     }
-    
+
     return result;
 }
