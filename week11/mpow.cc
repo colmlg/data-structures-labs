@@ -15,9 +15,9 @@ using std::vector;
 class RowEntry {
 public:
     int column;
-    long value;
+    double value;
 
-    RowEntry(int column, long value) {
+    RowEntry(int column, double value) {
         this->column = column;
         this->value = value;
     }
@@ -31,7 +31,7 @@ Row readLine(string line);
 void print(const Matrix& matrix);
 Matrix transposeMatrix(const Matrix& matrix);
 Matrix multiplyMatrices(const Matrix& first, const Matrix& second, Matrix& result);
-long multiplyRows(const Row& first, const Row& second);
+double multiplyRows(const Row& first, const Row& second);
 Matrix createIdentityMatrix(const int size);
 
 int transposedRowCount = 0;
@@ -143,8 +143,8 @@ Matrix multiplyMatrices(const Matrix& first, const Matrix& second, Matrix& resul
     }
 }
 
-long multiplyRows(const Row& first, const Row& second) {
-    long result = 0.0;
+double multiplyRows(const Row& first, const Row& second) {
+    double result = 0.0;
     Row::const_iterator firstPos = first.begin();
     Row::const_iterator secondPos = second.begin();
 
