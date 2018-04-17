@@ -32,6 +32,7 @@ void print(const Matrix& matrix);
 Matrix transposeMatrix(const Matrix& matrix);
 Matrix multiplyMatrices(const Matrix& first, const Matrix& second, Matrix& result);
 long multiplyRows(const Row& first, const Row& second);
+Matrix createIdentityMatrix(const int size);
 
 int transposedRowCount = 0;
 
@@ -45,8 +46,13 @@ int main(int argc, char *argv[]) {
     }
 
     Matrix sparseMatrix = readMatrix();
-
-    if (power == 1) {
+    
+    if(power == 0) {
+        print(createIdentityMatrix(sparseMatrix.size()));
+        return 0;
+    }
+    
+    if(power == 1) {
         print(sparseMatrix);
         return 0;
     }
@@ -153,6 +159,15 @@ long multiplyRows(const Row& first, const Row& second) {
             firstPos++;
         }
     }
-
+    
     return result;
+}
+
+Matrix createIdentityMatrix(const int size) {
+    Matrix identity = Matrix(size);
+    
+    for(int i = 0; i < size; i++) {
+        identity[i].push_back(RowEntry((i + 1), 1));
+    }
+    return identity;
 }
