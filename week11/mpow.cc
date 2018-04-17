@@ -23,8 +23,8 @@ public:
     }
 };
 
-using Row = list<RowEntry>;
-using Matrix = vector<Row>;
+typedef list<RowEntry> Row;
+typedef vector<Row> Matrix;
 
 Matrix readMatrix();
 Row readLine(string line);
