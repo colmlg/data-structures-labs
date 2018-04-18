@@ -38,6 +38,12 @@ int transposedRowCount = 0;
 
 int main(int argc, char *argv[]) {
 
+    
+    if(argc < 2) {
+        cout << "Illegal exponent; exiting." << endl;
+        return 1;
+    }
+    
     std::istringstream ss(argv[1]);
     int power;
     if (!(ss >> power) || power < 0) {
@@ -59,20 +65,14 @@ int main(int argc, char *argv[]) {
     
     Matrix resultMatrix;
     multiplyMatrices(sparseMatrix, sparseMatrix, resultMatrix);
-    Matrix* resultPointer = &resultMatrix;
-    Matrix newResult;
-    Matrix* newResultPointer = &newResult;
-    Matrix* temp;
 
-    
     for (int j = 2; j < power; j++) {
-        multiplyMatrices(sparseMatrix, *resultPointer, *newResultPointer);
-        temp = resultPointer;
-        resultPointer = newResultPointer;
-        newResultPointer = temp;
+        Matrix newResult;
+        multiplyMatrices(sparseMatrix, resultMatrix, newResult);
+        resultMatrix = newResult;
     }
 
-    print(*resultPointer);
+    print(resultMatrix);
 
     return 0;
 }
