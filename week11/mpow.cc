@@ -30,7 +30,7 @@ Matrix readMatrix();
 Row readLine(string line);
 void print(const Matrix& matrix);
 Matrix transposeMatrix(const Matrix& matrix);
-Matrix multiplyMatrices(const Matrix& first, const Matrix& second, Matrix& result);
+void multiplyMatrices(const Matrix& first, const Matrix& second, Matrix& result);
 double multiplyRows(const Row& first, const Row& second);
 Matrix createIdentityMatrix(const int size);
 
@@ -59,14 +59,20 @@ int main(int argc, char *argv[]) {
     
     Matrix resultMatrix;
     multiplyMatrices(sparseMatrix, sparseMatrix, resultMatrix);
+    Matrix* resultPointer = &resultMatrix;
+    Matrix newResult;
+    Matrix* newResultPointer = &newResult;
+    Matrix* temp;
 
+    
     for (int j = 2; j < power; j++) {
-        Matrix newResult;
-        multiplyMatrices(sparseMatrix, resultMatrix, newResult);
-        resultMatrix = newResult;
+        multiplyMatrices(sparseMatrix, *resultPointer, *newResultPointer);
+        temp = resultPointer;
+        resultPointer = newResultPointer;
+        newResultPointer = temp;
     }
 
-    print(resultMatrix);
+    print(*resultPointer);
 
     return 0;
 }
@@ -123,13 +129,11 @@ Matrix transposeMatrix(const Matrix& matrix) {
     return transposed;
 }
 
-Matrix multiplyMatrices(const Matrix& first, const Matrix& second, Matrix& result) {
+void multiplyMatrices(const Matrix& first, const Matrix& second, Matrix& result) {
     result.clear();
-
     for (int i = 0; i < first.size(); i++) {
         result.push_back(Row());
     }
-
 
     Matrix secondT = transposeMatrix(second);
     for (int row = 0; row < first.size(); row++) {
@@ -147,16 +151,29 @@ double multiplyRows(const Row& first, const Row& second) {
     double result = 0.0;
     Row::const_iterator firstPos = first.begin();
     Row::const_iterator secondPos = second.begin();
+    
+    Row::const_iterator firstEnd = first.end();
+    Row::const_iterator secondEnd = second.end();
 
-    while (firstPos != first.end() && secondPos != second.end()) {
+
+    while (true) {
+        while(firstPos->column < secondPos->column && firstPos != firstEnd)
+            firstPos++;
+
+        if(firstPos == firstEnd) break;
+
+            
+        while(secondPos->column < firstPos->column && secondPos != secondEnd)
+            secondPos++;
+
+        if(secondPos == secondEnd) break;
+
+        
+        
         if (firstPos->column == secondPos->column) {
             result += (firstPos->value * secondPos->value);
             firstPos++;
-            secondPos++;
-        } else if (firstPos->column > secondPos->column) {
-            secondPos++;
-        } else { // if (firstPos->column < secondPos->column)
-            firstPos++;
+            if(firstPos == firstEnd) break;
         }
     }
     
