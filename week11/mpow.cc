@@ -26,13 +26,15 @@ public:
 typedef list<RowEntry> Row;
 typedef vector<Row> Matrix;
 
-Matrix readMatrix();
+void readMatrix(Matrix& matrix);
 Row readLine(string line);
 void print(const Matrix& matrix);
-Matrix transposeMatrix(const Matrix& matrix);
+void transposeMatrix(const Matrix& matrix, Matrix& transposed);
 void multiplyMatrices(const Matrix& first, const Matrix& second, Matrix& result);
 double multiplyRows(const Row& first, const Row& second);
 Matrix createIdentityMatrix(const int size);
+double dotProd(const Row& r1, const Row& r2);
+
 
 int transposedRowCount = 0;
 
@@ -51,7 +53,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    Matrix sparseMatrix = readMatrix();
+    Matrix sparseMatrix;
+    readMatrix(sparseMatrix);
     
     if(power == 0) {
         print(createIdentityMatrix(sparseMatrix.size()));
@@ -77,8 +80,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-inline Matrix readMatrix() {
-    Matrix matrix;
+ void readMatrix(Matrix& matrix) {
     string line;
     int rowCount = 0;
     while (getline(cin, line)) {
@@ -89,8 +91,6 @@ inline Matrix readMatrix() {
     if (rowCount > transposedRowCount) {
         transposedRowCount = rowCount;
     }
-
-    return matrix;
 }
 
 inline Row readLine(string line) {
@@ -117,8 +117,7 @@ void print(const Matrix& matrix) {
     }
 }
 
-Matrix transposeMatrix(const Matrix& matrix) {
-    Matrix transposed(transposedRowCount);
+void transposeMatrix(const Matrix& matrix, Matrix& transposed) {
     for (int r = 0; r < matrix.size(); r++) {
         for (RowEntry entry : matrix[r]) {
             int newRow = entry.column - 1;
@@ -126,16 +125,18 @@ Matrix transposeMatrix(const Matrix& matrix) {
             transposed[newRow].push_back(entry);
         }
     }
-    return transposed;
 }
 
 void multiplyMatrices(const Matrix& first, const Matrix& second, Matrix& result) {
     result.clear();
     for (int i = 0; i < first.size(); i++) {
-        result.push_back(Row());
+      Row row;
+      result.push_back(row);
     }
 
-    Matrix secondT = transposeMatrix(second);
+    Matrix secondT(transposedRowCount);
+    transposeMatrix(second, secondT);
+    
     for (int row = 0; row < first.size(); row++) {
         for (int column = 0; column < secondT.size(); column++) {
             double value = multiplyRows(first[row], secondT[column]);
@@ -147,6 +148,9 @@ void multiplyMatrices(const Matrix& first, const Matrix& second, Matrix& result)
     }
 }
 
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
+#define MAX(a,b) ((a) > (b) ? (a) : (b))
+
 double multiplyRows(const Row& first, const Row& second) {
     double result = 0.0;
     Row::const_iterator firstPos = first.begin();
@@ -157,19 +161,17 @@ double multiplyRows(const Row& first, const Row& second) {
 
 
     while (true) {
-        while(firstPos->column < secondPos->column && firstPos != firstEnd)
+        int targetCol = MAX(firstPos->column, secondPos->column);
+        while(firstPos->column < targetCol && firstPos != firstEnd)
             firstPos++;
 
         if(firstPos == firstEnd) break;
-
-            
-        while(secondPos->column < firstPos->column && secondPos != secondEnd)
+	
+        while(secondPos->column < targetCol && secondPos != secondEnd)
             secondPos++;
 
         if(secondPos == secondEnd) break;
-
-        
-        
+	
         if (firstPos->column == secondPos->column) {
             result += (firstPos->value * secondPos->value);
             firstPos++;
